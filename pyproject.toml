@@ -1,0 +1,22 @@
+[project]
+name = "mancala"
+version = "0.1.0"
+description = "Visualize colormaps in color spaces."
+authors = [
+    {name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com"},
+]
+dependencies = ["typer>=0.16.0", "cmasher>=1.9.2", "matplotlib>=3.10.5", "colour-science>=0.4.6", "networkx<4,>=3"]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
+
+[project.scripts]
+mancala = "mancala.cli:app"
+mcl = "mancala.cli:app"
