@@ -30,12 +30,12 @@ def plot_LCH(*cmaps: Callable[[np.ndarray], np.ndarray], model: str = "OKLab"):
     ax_func.set_title(f"Colors in {model}")
     ax_func.set_xlabel("a")
     ax_func.set_ylabel("b")
-    ax_func.set_zlabel("l")
+    ax_func.set_zlabel("Lightness")
 
     ax_dv.set_title(f"Derivatives in {model}")
-    ax_dv.set_xlabel("da")
-    ax_dv.set_ylabel("db")
-    ax_dv.set_zlabel("dl")
+    ax_dv.set_xlabel("a")
+    ax_dv.set_ylabel("b")
+    ax_dv.set_zlabel("Lightness")
 
     plt.tight_layout()
     plt.show()
@@ -69,8 +69,8 @@ def plot_CH(*cmaps: Callable[[np.ndarray], np.ndarray], model: str = "OKLab"):
     ax_func.set_ylabel("Chroma")
 
     ax_dv.set_title(f"Derivatives in {model}")
-    ax_dv.set_xlabel("dHue")
-    ax_dv.set_ylabel("dChroma")
+    ax_dv.set_xlabel("Hue")
+    ax_dv.set_ylabel("Chroma")
 
     plt.tight_layout()
     plt.show()
