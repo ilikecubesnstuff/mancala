@@ -1,9 +1,17 @@
+from collections.abc import Callable
+
 import numpy as np
 import colour
 
-def transformed(cmap, output_space='OKLab', q=np.linspace(0, 1, 10000)):
+from .utils import diff, interp
+
+
+def extract_coordinates(cmap: Callable[[np.ndarray], np.ndarray], /, *, model: str = "OKLab", with_derivatives: bool = False) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    # assume cmap is a callable that is defined over a free parameter
+    # q in [0, 1], and returns RGB values in the sRGB color space.
+    q = np.linspace(0, 1, 10_000)  # 10k points for smoothness
     srgb = cmap(q)
-    if srgb.shape[1] == 4:
+    if srgb.shape[1] == 4:  # remove alpha channel if present
         srgb = srgb[:, :-1]
 
     # unfortunately, we have to deal with repeats
@@ -11,21 +19,23 @@ def transformed(cmap, output_space='OKLab', q=np.linspace(0, 1, 10000)):
     # so having too smooth a free paramater will run into
     # discretization issues.
     # NOTE: this may affect the derivatives? investigate in the future
-    d_srgb = np.linalg.norm(srgb[1:] - srgb[:-1], axis=1)
-    zeros = np.array([True, *np.isclose(d_srgb, 0)])
-    q = q[~zeros]
-    srgb = srgb[~zeros]
+    d_srgb = np.linalg.norm(diff(srgb), axis=1)
+    mask = ~np.isclose(d_srgb, 0)
+    mask = np.concatenate([[True], mask])  # keep the first point
+    q = q[mask]
+    srgb = srgb[mask]
 
-    osc = colour.convert(srgb, source='sRGB', target=output_space)
-    return q, srgb, osc
-
-def transformed_dv(cmap, output_space="OKLab"):
-    q, srgb, osc = transformed(cmap, output_space=output_space)
+    # compute colour model transformation
+    lab = colour.convert(srgb, source='sRGB', target=model)
+    if not with_derivatives:
+        return q, srgb, lab
 
     # compute derivatives
-    dq = q[1:] - q[:-1]
-    dv = (osc[1:] - osc[:-1]) / np.column_stack([dq, dq, dq])
-    q_interp = (q[1:] + q[:-1]) / 2
-    srgb_interp = (srgb[1:] + srgb[:-1]) / 2
+    d_q = diff(q)
+    d_q = diff(q)
+    d_lab = diff(lab) / np.column_stack([d_q, d_q, d_q])
 
-    return q_interp, srgb_interp, dv
+    # interpolate original data
+    q_interp = interp(q)
+    srgb_interp = interp(srgb)
+    return q, srgb, lab, q_interp, srgb_interp, d_lab

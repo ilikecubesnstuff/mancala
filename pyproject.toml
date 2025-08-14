@@ -5,14 +5,14 @@ description = "Visualize colormaps in color spaces."
 authors = [
     {name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com"},
 ]
-dependencies = ["typer>=0.16.0", "cmasher>=1.9.2", "matplotlib>=3.10.5", "colour-science>=0.4.6", "networkx<4,>=3"]
-requires-python = ">=3.10"
+dependencies = ["numpy>=2.3.2", "matplotlib>=3.10.5", "typer>=0.16.0", "cmasher>=1.9.2", "colour-science>=0.4.6", "SciencePlots>=2.1.1", "networkx>=3.5", "pyqt5>=5.15.11"]
+requires-python = "<3.13,>=3.11"
 readme = "README.md"
 license = {text = "MIT"}
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
 
 [tool.pdm]
 distribution = true
